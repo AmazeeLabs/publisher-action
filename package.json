@@ -1,19 +1,20 @@
 {
-  "name": "typescript-action",
-  "description": "GitHub Actions TypeScript template",
+  "name": "publisher-action",
+  "description": "Amazee Labs Publisher GitHub Action",
   "version": "0.0.0",
   "author": "Amazee Labs",
   "private": true,
   "type": "module",
-  "exports": {
-    ".": "./dist/index.js"
-  },
+  "packageManager": "pnpm@8.6.12",
   "engines": {
-    "node": "20.6.0",
+    "node": "20",
     "pnpm": "8.6.12"
   },
   "scripts": {
-    "package": "rm -rf dist && npx ncc build src/main.ts -o dist/main && npx ncc build src/pre.ts -o dist/pre && npx ncc build src/post.ts -o dist/post",
+    "package": "rm -rf dist && pnpm exec ncc build src/main.ts -o dist/main && pnpm exec ncc build src/pre.ts -o dist/pre && pnpm exec ncc build src/post.ts -o dist/post",
+    "check": "if [ -n \"$CI\" ]; then prettier --check .; else prettier --write --log-level warn .; fi && pnpm test:static && pnpm test",
+    "test:static": "tsc --noEmit && eslint . --ext .ts --quiet",
+    "test": "vitest run",
     "prepare": "husky || true"
   },
   "license": "MIT",
@@ -26,20 +27,19 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@types/node": "^22.0.0",
+    "@types/node": "^20.19.43",
     "@typescript-eslint/eslint-plugin": "^6.17.0",
     "@typescript-eslint/parser": "^6.17.0",
     "@vercel/ncc": "^0.38.1",
-    "eslint": "^7",
+    "eslint": "^8.57.1",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-no-only-tests": "^3.1.0",
     "eslint-plugin-promise": "^7.0.0",
-    "eslint-plugin-react": "^7.35.0",
-    "eslint-plugin-react-hooks": "^4.6.2",
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "husky": "^9.1.4",
     "prettier": "^3.3.3",
-    "typescript": "^5.5.4"
+    "typescript": "^5.5.4",
+    "vitest": "^4.1.10"
   }
 }
