@@ -19,9 +19,9 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@actions/cache": "^4.1.0",
-    "@actions/core": "^1.11.1",
-    "@actions/github": "^6.0.1",
+    "@actions/cache": "^6.2.0",
+    "@actions/core": "^3.0.1",
+    "@actions/github": "^9.1.1",
     "@amazeelabs/publisher-shared": "^2.0.28",
     "@octokit/rest": "^21.1.1",
     "zod": "^3.25.76"
