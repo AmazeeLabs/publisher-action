@@ -39843,13 +39843,12 @@ async function clearCache() {
     try {
         const octokit = new _octokit_rest__WEBPACK_IMPORTED_MODULE_4__/* .Octokit */ .E({ auth: config.githubToken });
         const [owner, repo] = process.env.GITHUB_REPOSITORY.split('/');
-        // FIXME: Paginate. Only the first page is listed, so a repository with many
-        // caches keeps old entries and risks stale builds.
-        const list = await octokit.actions.getActionsCacheList({
+        const caches = await octokit.paginate(octokit.actions.getActionsCacheList, {
             owner,
             repo,
+            per_page: 100,
         });
-        await Promise.all(list.data.actions_caches
+        await Promise.all(caches
             .filter((cache) => !!cache.key?.startsWith(`${config.cache.key}-`))
             .map((cache) => {
             _actions_core__WEBPACK_IMPORTED_MODULE_0__/* .info */ .pq(`Deleting cache ${cache.key}`);
@@ -39897,9 +39896,8 @@ if (isSuccess && _lib_js__WEBPACK_IMPORTED_MODULE_2__/* .config */ .$W.cache) {
             .replace('T', '_');
         const cacheKey = `${_lib_js__WEBPACK_IMPORTED_MODULE_2__/* .config */ .$W.cache.key}-${timestamp}`;
         const savedId = await _actions_cache__WEBPACK_IMPORTED_MODULE_0__/* .saveCache */ .Io(_lib_js__WEBPACK_IMPORTED_MODULE_2__/* .config */ .$W.cache.paths, cacheKey);
-        // FIXME: `saveCache` swallows most failures and returns -1, which is truthy,
-        // so a failed save is reported as a success here.
-        if (savedId) {
+        // `saveCache` swallows most failures and returns -1 instead of throwing.
+        if (savedId > 0) {
             _actions_core__WEBPACK_IMPORTED_MODULE_1__/* .info */ .pq(`Cache saved. Key: ${cacheKey}, ID: ${savedId}`);
         }
         else {

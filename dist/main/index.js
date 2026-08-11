@@ -39841,13 +39841,12 @@ async function clearCache() {
     try {
         const octokit = new Octokit({ auth: config.githubToken });
         const [owner, repo] = process.env.GITHUB_REPOSITORY.split('/');
-        // FIXME: Paginate. Only the first page is listed, so a repository with many
-        // caches keeps old entries and risks stale builds.
-        const list = await octokit.actions.getActionsCacheList({
+        const caches = await octokit.paginate(octokit.actions.getActionsCacheList, {
             owner,
             repo,
+            per_page: 100,
         });
-        await Promise.all(list.data.actions_caches
+        await Promise.all(caches
             .filter((cache) => !!cache.key?.startsWith(`${config.cache.key}-`))
             .map((cache) => {
             core.info(`Deleting cache ${cache.key}`);
