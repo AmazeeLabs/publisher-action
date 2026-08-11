@@ -9,11 +9,7 @@ import {
 import { Octokit } from '@octokit/rest';
 import { z, ZodType } from 'zod';
 
-type InputKey =
-  | 'success_env_var_name'
-  | 'cache_paths'
-  | 'cache_key'
-  | 'github_token';
+import { InputKey } from './inputs.js';
 
 type Config = {
   successEnvVarName: string;
@@ -59,7 +55,7 @@ const inputsSchema = z
 async function getConfig(): Promise<Config> {
   try {
     const publisherPayloadJson: unknown =
-      github.context.payload.inputs.publisher_payload;
+      github.context.payload.inputs?.publisher_payload;
     if (
       !publisherPayloadJson ||
       typeof publisherPayloadJson !== 'string' ||
@@ -73,7 +69,9 @@ async function getConfig(): Promise<Config> {
     try {
       publisherPayloadRaw = JSON.parse(publisherPayloadJson);
     } catch (error) {
-      throw new Error(`Failed to parse "publisher_payload" input: ${error}`);
+      throw new Error(`Failed to parse "publisher_payload" input: ${error}`, {
+        cause: error,
+      });
     }
     const publisherPayload =
       workflowPublisherPayloadSchema.parse(publisherPayloadRaw);
@@ -91,7 +89,7 @@ async function getConfig(): Promise<Config> {
     await fail(`Failed to get config: ${error}`, {
       skipNotification: true,
     });
-    throw new Error('Unreachable');
+    throw new Error('Unreachable', { cause: error });
   }
 }
 
@@ -139,6 +137,8 @@ export async function clearCache(): Promise<void> {
   try {
     const octokit = new Octokit({ auth: config.githubToken });
     const [owner, repo] = process.env.GITHUB_REPOSITORY!.split('/');
+    // FIXME: Paginate. Only the first page is listed, so a repository with many
+    // caches keeps old entries and risks stale builds.
     const list = await octokit.actions.getActionsCacheList({
       owner,
       repo,

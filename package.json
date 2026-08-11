@@ -1,45 +1,46 @@
 {
-  "name": "typescript-action",
-  "description": "GitHub Actions TypeScript template",
+  "name": "publisher-action",
+  "description": "Amazee Labs Publisher GitHub Action",
   "version": "0.0.0",
   "author": "Amazee Labs",
   "private": true,
   "type": "module",
-  "exports": {
-    ".": "./dist/index.js"
-  },
+  "packageManager": "pnpm@8.6.12",
   "engines": {
-    "node": "20.6.0",
+    "node": "24",
     "pnpm": "8.6.12"
   },
   "scripts": {
-    "package": "rm -rf dist && npx ncc build src/main.ts -o dist/main && npx ncc build src/pre.ts -o dist/pre && npx ncc build src/post.ts -o dist/post",
+    "package": "rm -rf dist && pnpm exec ncc build src/main.ts -o dist/main && pnpm exec ncc build src/pre.ts -o dist/pre && pnpm exec ncc build src/post.ts -o dist/post",
+    "check": "if [ -n \"$CI\" ]; then prettier --check .; else prettier --write --log-level warn .; fi && pnpm test:static && pnpm test",
+    "test:static": "tsc --noEmit && eslint . --quiet",
+    "test": "vitest run",
     "prepare": "husky || true"
   },
   "license": "MIT",
   "dependencies": {
-    "@actions/cache": "^4.0.3",
-    "@actions/core": "^1.11.1",
-    "@actions/github": "^6.0.0",
-    "@amazeelabs/publisher-shared": "^2.0.26",
-    "@octokit/rest": "^21.0.1",
-    "zod": "^3.23.8"
+    "@actions/cache": "^6.2.0",
+    "@actions/core": "^3.0.1",
+    "@actions/github": "^9.1.1",
+    "@amazeelabs/publisher-shared": "^2.0.28",
+    "@octokit/rest": "^21.1.1",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
-    "@types/node": "^22.0.0",
-    "@typescript-eslint/eslint-plugin": "^6.17.0",
-    "@typescript-eslint/parser": "^6.17.0",
-    "@vercel/ncc": "^0.38.1",
-    "eslint": "^7",
-    "eslint-config-prettier": "^9.1.0",
-    "eslint-plugin-import": "^2.29.1",
-    "eslint-plugin-no-only-tests": "^3.1.0",
-    "eslint-plugin-promise": "^7.0.0",
-    "eslint-plugin-react": "^7.35.0",
-    "eslint-plugin-react-hooks": "^4.6.2",
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^24.13.3",
+    "@vercel/ncc": "^0.38.4",
+    "eslint": "^10.8.1",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-import-x": "^4.17.1",
+    "eslint-plugin-no-only-tests": "^3.4.0",
+    "eslint-plugin-promise": "^7.3.0",
     "eslint-plugin-simple-import-sort": "^12.1.1",
-    "husky": "^9.1.4",
-    "prettier": "^3.3.3",
-    "typescript": "^5.5.4"
+    "globals": "^17.9.0",
+    "husky": "^9.1.7",
+    "prettier": "^3.9.6",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.67.0",
+    "vitest": "^4.1.10"
   }
 }

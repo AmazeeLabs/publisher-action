@@ -1,0 +1,29 @@
+name: 'Setup'
+description: 'Common setup steps for GitHub Actions'
+runs:
+  using: 'composite'
+  steps:
+    - name: Install devbox
+      uses: jetify-com/devbox-install-action@8c6a66ed6273138b1915457069de78cb52fe3bd7 # v0.15.0
+      with:
+        enable-cache: 'true'
+        # Should match version from .envrc
+        devbox-version: '0.17.5'
+
+    - name: Load devbox via direnv
+      uses: HatsuneMiku3939/direnv-action@6204df45a0179b54cdc2b51b22ac93d728ca6e4d # v1.4.5
+
+    - name: Cache dependencies
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: /tmp/cache
+        key: cache-${{ hashFiles('pnpm-lock.yaml') }}
+        restore-keys: cache-
+
+    - name: Set pnpm cache dir
+      shell: bash
+      run: pnpm config set store-dir /tmp/cache/pnpm
+
+    - name: Install dependencies
+      shell: bash
+      run: pnpm i --frozen-lockfile
