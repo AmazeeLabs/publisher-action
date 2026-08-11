@@ -9,11 +9,7 @@ import {
 import { Octokit } from '@octokit/rest';
 import { z, ZodType } from 'zod';
 
-type InputKey =
-  | 'success_env_var_name'
-  | 'cache_paths'
-  | 'cache_key'
-  | 'github_token';
+import { InputKey } from './inputs.js';
 
 type Config = {
   successEnvVarName: string;
@@ -59,7 +55,7 @@ const inputsSchema = z
 async function getConfig(): Promise<Config> {
   try {
     const publisherPayloadJson: unknown =
-      github.context.payload.inputs.publisher_payload;
+      github.context.payload.inputs?.publisher_payload;
     if (
       !publisherPayloadJson ||
       typeof publisherPayloadJson !== 'string' ||
@@ -139,6 +135,8 @@ export async function clearCache(): Promise<void> {
   try {
     const octokit = new Octokit({ auth: config.githubToken });
     const [owner, repo] = process.env.GITHUB_REPOSITORY!.split('/');
+    // FIXME: Paginate. Only the first page is listed, so a repository with many
+    // caches keeps old entries and risks stale builds.
     const list = await octokit.actions.getActionsCacheList({
       owner,
       repo,

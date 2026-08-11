@@ -69389,7 +69389,7 @@ const inputsSchema = zod__WEBPACK_IMPORTED_MODULE_3__.z.object({
 });
 async function getConfig() {
     try {
-        const publisherPayloadJson = _actions_github__WEBPACK_IMPORTED_MODULE_1__.context.payload.inputs.publisher_payload;
+        const publisherPayloadJson = _actions_github__WEBPACK_IMPORTED_MODULE_1__.context.payload.inputs?.publisher_payload;
         if (!publisherPayloadJson ||
             typeof publisherPayloadJson !== 'string' ||
             !publisherPayloadJson.trim()) {
@@ -69455,6 +69455,8 @@ async function clearCache() {
     try {
         const octokit = new Octokit({ auth: config.githubToken });
         const [owner, repo] = process.env.GITHUB_REPOSITORY.split('/');
+        // FIXME: Paginate. Only the first page is listed, so a repository with many
+        // caches keeps old entries and risks stale builds.
         const list = await octokit.actions.getActionsCacheList({
             owner,
             repo,
