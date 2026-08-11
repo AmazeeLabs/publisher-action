@@ -28898,7 +28898,9 @@ async function getConfig() {
             publisherPayloadRaw = JSON.parse(publisherPayloadJson);
         }
         catch (error) {
-            throw new Error(`Failed to parse "publisher_payload" input: ${error}`);
+            throw new Error(`Failed to parse "publisher_payload" input: ${error}`, {
+                cause: error,
+            });
         }
         const publisherPayload = _amazeelabs_publisher_shared__WEBPACK_IMPORTED_MODULE_2__/* .workflowPublisherPayloadSchema */ .r3.parse(publisherPayloadRaw);
         return {
@@ -28915,7 +28917,7 @@ async function getConfig() {
         await fail(`Failed to get config: ${error}`, {
             skipNotification: true,
         });
-        throw new Error('Unreachable');
+        throw new Error('Unreachable', { cause: error });
     }
 }
 const config = await getConfig();

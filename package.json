@@ -13,7 +13,7 @@
   "scripts": {
     "package": "rm -rf dist && pnpm exec ncc build src/main.ts -o dist/main && pnpm exec ncc build src/pre.ts -o dist/pre && pnpm exec ncc build src/post.ts -o dist/post",
     "check": "if [ -n \"$CI\" ]; then prettier --check .; else prettier --write --log-level warn .; fi && pnpm test:static && pnpm test",
-    "test:static": "tsc --noEmit && eslint . --ext .ts --quiet",
+    "test:static": "tsc --noEmit && eslint . --quiet",
     "test": "vitest run",
     "prepare": "husky || true"
   },
@@ -27,19 +27,20 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@types/node": "^20.19.43",
-    "@typescript-eslint/eslint-plugin": "^6.21.0",
-    "@typescript-eslint/parser": "^6.21.0",
     "@vercel/ncc": "^0.38.4",
-    "eslint": "^8.57.1",
-    "eslint-config-prettier": "^9.1.2",
-    "eslint-plugin-import": "^2.32.0",
+    "eslint": "^10.8.1",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-import-x": "^4.17.1",
     "eslint-plugin-no-only-tests": "^3.4.0",
     "eslint-plugin-promise": "^7.3.0",
     "eslint-plugin-simple-import-sort": "^12.1.1",
+    "globals": "^17.9.0",
     "husky": "^9.1.7",
     "prettier": "^3.9.6",
     "typescript": "^5.9.3",
+    "typescript-eslint": "^8.67.0",
     "vitest": "^4.1.10"
   }
 }
