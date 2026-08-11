@@ -39897,6 +39897,8 @@ if (isSuccess && _lib_js__WEBPACK_IMPORTED_MODULE_2__/* .config */ .$W.cache) {
             .replace('T', '_');
         const cacheKey = `${_lib_js__WEBPACK_IMPORTED_MODULE_2__/* .config */ .$W.cache.key}-${timestamp}`;
         const savedId = await _actions_cache__WEBPACK_IMPORTED_MODULE_0__/* .saveCache */ .Io(_lib_js__WEBPACK_IMPORTED_MODULE_2__/* .config */ .$W.cache.paths, cacheKey);
+        // FIXME: `saveCache` swallows most failures and returns -1, which is truthy,
+        // so a failed save is reported as a success here.
         if (savedId) {
             _actions_core__WEBPACK_IMPORTED_MODULE_1__/* .info */ .pq(`Cache saved. Key: ${cacheKey}, ID: ${savedId}`);
         }

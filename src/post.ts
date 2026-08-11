@@ -18,6 +18,8 @@ if (isSuccess && config.cache) {
       .replace('T', '_');
     const cacheKey = `${config.cache.key}-${timestamp}`;
     const savedId = await cache.saveCache(config.cache.paths, cacheKey);
+    // FIXME: `saveCache` swallows most failures and returns -1, which is truthy,
+    // so a failed save is reported as a success here.
     if (savedId) {
       core.info(`Cache saved. Key: ${cacheKey}, ID: ${savedId}`);
     } else {
