@@ -281,6 +281,37 @@ describe('clearCache', () => {
     ]);
   });
 
+  it('deletes the matching caches of every page', async () => {
+    const { api } = await setupCacheApi((request) => {
+      if (request.method !== 'GET') {
+        return { status: 200, body: {} };
+      }
+      const page = new URL(request.path, 'http://x').searchParams.get('page');
+      return page === '2'
+        ? { body: cacheListResponse(['fe-build-cache-dev-20240102_000000']) }
+        : {
+            body: cacheListResponse(['fe-build-cache-dev-20240101_000000']),
+            headers: {
+              link: `<https://api.github.com/repos/${testRepositoryOwner}/${testRepositoryName}/actions/caches?page=2>; rel="next"`,
+            },
+          };
+    });
+
+    const { clearCache } = await loadLib();
+    await clearCache();
+
+    const deleted = api.requests
+      .filter((request) => request.method === 'DELETE')
+      .map((request) =>
+        new URL(request.path, 'http://x').searchParams.get('key'),
+      )
+      .sort();
+    expect(deleted).toEqual([
+      'fe-build-cache-dev-20240101_000000',
+      'fe-build-cache-dev-20240102_000000',
+    ]);
+  });
+
   it('asks the API for the caches of the current repository', async () => {
     const { api } = await setupCacheApi(() => ({
       body: cacheListResponse([]),
@@ -290,7 +321,7 @@ describe('clearCache', () => {
     await clearCache();
 
     expect(api.requests[0].path).toBe(
-      `/repos/${testRepositoryOwner}/${testRepositoryName}/actions/caches`,
+      `/repos/${testRepositoryOwner}/${testRepositoryName}/actions/caches?per_page=100`,
     );
     expect(api.requests[0].headers.authorization).toBe('token test-token');
   });

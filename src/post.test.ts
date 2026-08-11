@@ -179,6 +179,19 @@ describe('cache save', () => {
     });
   });
 
+  // `saveCache` swallows most failures and returns -1 instead of throwing.
+  it('fails the run when the cache service reports a swallowed failure', async () => {
+    const { publisher, action } = await setupSuccessfulBuild();
+    saveCache.mockResolvedValue(-1);
+
+    await expectFailedRun(runPost());
+
+    expect(action.output()).toContain('::error::Cache not saved');
+    expect(JSON.parse(publisher.requests[0].body)).toMatchObject({
+      status: 'failure',
+    });
+  });
+
   it('fails the run when saving the cache throws', async () => {
     const { publisher, action } = await setupSuccessfulBuild();
     saveCache.mockRejectedValue(new Error('quota exceeded'));
